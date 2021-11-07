@@ -8,6 +8,9 @@ mod termion;
 #[cfg(feature = "termion")]
 pub use self::termion::TermionBackend;
 
+mod zui;
+pub use self::zui::ZuiBackend;
+
 #[cfg(feature = "crossterm")]
 mod crossterm;
 #[cfg(feature = "crossterm")]

@@ -4,20 +4,12 @@
 [![Crate Status](https://img.shields.io/crates/v/tui.svg)](https://crates.io/crates/tui)
 [![Docs Status](https://docs.rs/tui/badge.svg)](https://docs.rs/crate/tui/)
 
-<img src="./assets/demo.gif" alt="Demo cast under Linux Termite with Inconsolata font 12pt">
-
 `tui-rs` is a [Rust](https://www.rust-lang.org) library to build rich terminal
 user interfaces and dashboards. It is heavily inspired by the `Javascript`
 library [blessed-contrib](https://github.com/yaronn/blessed-contrib) and the
 `Go` library [termui](https://github.com/gizak/termui).
 
-The library itself supports four different backends to draw to the terminal. You
-can either choose from:
-
-  - [termion](https://github.com/ticki/termion)
-  - [rustbox](https://github.com/gchp/rustbox)
-  - [crossterm](https://github.com/crossterm-rs/crossterm)
-  - [pancurses](https://github.com/ihalila/pancurses)
+This fork is meant to support the [`zui`](https://git.dumrich.com/zui) terminal backend.
 
 However, some features may only be available in one of the four.
 
