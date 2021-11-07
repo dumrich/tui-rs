@@ -181,10 +181,10 @@ impl Default for ChartLayout {
 /// # Examples
 ///
 /// ```
-/// # use tui::symbols;
-/// # use tui::widgets::{Block, Borders, Chart, Axis, Dataset, GraphType};
-/// # use tui::style::{Style, Color};
-/// # use tui::text::Span;
+/// # use zui_widgets::symbols;
+/// # use zui_widgets::widgets::{Block, Borders, Chart, Axis, Dataset, GraphType};
+/// # use zui_widgets::style::{Style, Color};
+/// # use zui_widgets::text::Span;
 /// let datasets = vec![
 ///     Dataset::default()
 ///         .name("data1")
@@ -265,8 +265,8 @@ impl<'a> Chart<'a> {
     /// # Examples
     ///
     /// ```
-    /// # use tui::widgets::Chart;
-    /// # use tui::layout::Constraint;
+    /// # use zui_widgets::widgets::Chart;
+    /// # use zui_widgets::layout::Constraint;
     /// let constraints = (
     ///     Constraint::Ratio(1, 3),
     ///     Constraint::Ratio(1, 4)

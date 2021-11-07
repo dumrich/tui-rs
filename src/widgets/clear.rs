@@ -2,16 +2,16 @@ use crate::{buffer::Buffer, layout::Rect, widgets::Widget};
 
 /// A widget to clear/reset a certain area to allow overdrawing (e.g. for popups).
 ///
-/// This widget **cannot be used to clear the terminal on the first render** as `tui` assumes the
+/// This widget **cannot be used to clear the terminal on the first render** as `zui_widgets` assumes the
 /// render area is empty. Use [`crate::Terminal::clear`] instead.
 ///
 /// # Examples
 ///
 /// ```
-/// # use tui::widgets::{Clear, Block, Borders};
-/// # use tui::layout::Rect;
-/// # use tui::Frame;
-/// # use tui::backend::Backend;
+/// # use zui_widgets::widgets::{Clear, Block, Borders};
+/// # use zui_widgets::layout::Rect;
+/// # use zui_widgets::Frame;
+/// # use zui_widgets::backend::Backend;
 /// fn draw_on_clear<B: Backend>(f: &mut Frame<B>, area: Rect) {
 ///     let block = Block::default().title("Block").borders(Borders::ALL);
 ///     f.render_widget(Clear, area); // <- this will clear/reset the area first

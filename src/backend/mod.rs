@@ -16,9 +16,6 @@ mod crossterm;
 #[cfg(feature = "crossterm")]
 pub use self::crossterm::CrosstermBackend;
 
-mod test;
-pub use self::test::TestBackend;
-
 pub trait Backend {
     fn draw<'a, I>(&mut self, content: I) -> Result<(), io::Error>
     where

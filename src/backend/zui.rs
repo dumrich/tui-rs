@@ -4,24 +4,25 @@ use crate::{
     layout::Rect,
     style::{Color, Modifier},
 };
+use libzui::style::{self, set, Style};
 use libzui::term;
 use libzui::term::clear::TClear;
 use libzui::term::cursor::TCursor;
 use std::fmt;
 use std::io::{self, Write};
 
-pub struct ZuiBackend<'a> {
-    zui: term::Terminal<'a, io::Stdout>,
+pub struct ZuiBackend<'b> {
+    zui: term::Terminal<'b, io::Stdout>,
 }
 
-impl<'a> ZuiBackend<'a> {
-    pub fn new(stdout: &'a mut io::Stdout) -> ZuiBackend<'a> {
+impl<'b> ZuiBackend<'b> {
+    pub fn new(stdout: &'b mut io::Stdout) -> ZuiBackend<'b> {
         let term = term::Terminal::new(stdout).unwrap();
         ZuiBackend { zui: term }
     }
 }
 
-impl<'a> Write for ZuiBackend<'a> {
+impl<'b> Write for ZuiBackend<'b> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.zui.stdout.write(buf)
     }
@@ -31,7 +32,7 @@ impl<'a> Write for ZuiBackend<'a> {
     }
 }
 
-impl<'a> Backend for ZuiBackend<'a> {
+impl<'b> Backend for ZuiBackend<'b> {
     fn clear(&mut self) -> io::Result<()> {
         self.zui.clear_screen()
     }
@@ -61,10 +62,53 @@ impl<'a> Backend for ZuiBackend<'a> {
         self.zui.stdout.flush()
     }
 
-    fn draw<'b, I>(&mut self, content: I) -> io::Result<()>
+    fn draw<'a, I>(&mut self, content: I) -> io::Result<()>
     where
         I: Iterator<Item = (u16, u16, &'a Cell)>,
     {
+        use std::fmt::Write;
+
+        let mut string = String::with_capacity(content.size_hint().0 * 3);
+        let mut fg = Color::Reset;
+        let mut bg = Color::Reset;
+        let mut modifier = Modifier::empty();
+        let mut last_pos: Option<(u16, u16)> = None;
+        for (x, y, cell) in content {
+            // Move the cursor if the previous location was not (x - 1, y)
+            if !matches!(last_pos, Some(p) if x == p.0 + 1 && y == p.1) {
+                write!(string, "\u{001b}[{};{}H", y + 1, x + 1).unwrap();
+            }
+            last_pos = Some((x, y));
+            if cell.modifier != modifier {
+                write!(
+                    string,
+                    "{}",
+                    ModifierDiff {
+                        from: modifier,
+                        to: cell.modifier
+                    }
+                )
+                .unwrap();
+                modifier = cell.modifier;
+            }
+            if cell.fg != fg {
+                write!(string, "{}", Fg(cell.fg)).unwrap();
+                fg = cell.fg;
+            }
+            if cell.bg != bg {
+                write!(string, "{}", Bg(cell.bg)).unwrap();
+                bg = cell.bg;
+            }
+            string.push_str(&cell.symbol);
+        }
+        write!(
+            self.zui.stdout,
+            "{}{}{}{}",
+            string,
+            Fg(Color::Reset),
+            Bg(Color::Reset),
+            libzui::style::set(libzui::style::Style::Reset),
+        )
     }
 }
 
@@ -79,54 +123,57 @@ struct ModifierDiff {
 
 impl fmt::Display for Fg {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use libzui::color::fg;
         use libzui::color::Color as ZuiColor;
-        use libzui::color::{bg, fg};
+
         match self.0 {
-            Color::Reset => write!(self.zui.stdout, "{}", fg(ZuiColor::Reset)),
-            Color::Black => termion::color::Black.write_fg(f),
-            Color::Red => termion::color::Red.write_fg(f),
-            Color::Green => termion::color::Green.write_fg(f),
-            Color::Yellow => termion::color::Yellow.write_fg(f),
-            Color::Blue => termion::color::Blue.write_fg(f),
-            Color::Magenta => termion::color::Magenta.write_fg(f),
-            Color::Cyan => termion::color::Cyan.write_fg(f),
-            Color::Gray => termion::color::White.write_fg(f),
-            Color::DarkGray => termion::color::LightBlack.write_fg(f),
-            Color::LightRed => termion::color::LightRed.write_fg(f),
-            Color::LightGreen => termion::color::LightGreen.write_fg(f),
-            Color::LightBlue => termion::color::LightBlue.write_fg(f),
-            Color::LightYellow => termion::color::LightYellow.write_fg(f),
-            Color::LightMagenta => termion::color::LightMagenta.write_fg(f),
-            Color::LightCyan => termion::color::LightCyan.write_fg(f),
-            Color::White => termion::color::LightWhite.write_fg(f),
-            Color::Indexed(i) => ZuiColor::Reset,   //TODO: Fix
-            Color::Rgb(r, g, b) => ZuiColor::Reset, //TODO: Fix
+            Color::Reset => write!(f, "{}", fg(ZuiColor::Reset)),
+            Color::Black => write!(f, "{}", fg(ZuiColor::Black)),
+            Color::Red => write!(f, "{}", fg(ZuiColor::Red)),
+            Color::Green => write!(f, "{}", fg(ZuiColor::Green)),
+            Color::Yellow => write!(f, "{}", fg(ZuiColor::Yellow)),
+            Color::Blue => write!(f, "{}", fg(ZuiColor::Blue)),
+            Color::Magenta => write!(f, "{}", fg(ZuiColor::Purple)),
+            Color::Cyan => write!(f, "{}", fg(ZuiColor::Cyan)),
+            Color::Gray => write!(f, "{}", fg(ZuiColor::Black)),
+            Color::DarkGray => write!(f, "{}", fg(ZuiColor::Black)),
+            Color::LightRed => write!(f, "{}", fg(ZuiColor::RedLight)),
+            Color::LightGreen => write!(f, "{}", fg(ZuiColor::GreenLight)),
+            Color::LightBlue => write!(f, "{}", fg(ZuiColor::BlueLight)),
+            Color::LightYellow => write!(f, "{}", fg(ZuiColor::YellowLight)),
+            Color::LightMagenta => write!(f, "{}", fg(ZuiColor::PurpleLight)),
+            Color::LightCyan => write!(f, "{}", fg(ZuiColor::CyanLight)),
+            Color::White => write!(f, "{}", fg(ZuiColor::White)),
+            Color::Indexed(i) => write!(f, "{}", fg(ZuiColor::Reset)), //TODO: Fix
+            Color::Rgb(r, g, b) => write!(f, "{}", fg(ZuiColor::RGB(r.into(), g.into(), b.into()))),
         }
     }
 }
-impl fmt::Display for Bg {
+impl std::fmt::Display for Bg {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use termion::color::Color as TermionColor;
+        use libzui::color::bg;
+        use libzui::color::Color as ZuiColor;
+
         match self.0 {
-            Color::Reset => termion::color::Reset.write_bg(f),
-            Color::Black => termion::color::Black.write_bg(f),
-            Color::Red => termion::color::Red.write_bg(f),
-            Color::Green => termion::color::Green.write_bg(f),
-            Color::Yellow => termion::color::Yellow.write_bg(f),
-            Color::Blue => termion::color::Blue.write_bg(f),
-            Color::Magenta => termion::color::Magenta.write_bg(f),
-            Color::Cyan => termion::color::Cyan.write_bg(f),
-            Color::Gray => termion::color::White.write_bg(f),
-            Color::DarkGray => termion::color::LightBlack.write_bg(f),
-            Color::LightRed => termion::color::LightRed.write_bg(f),
-            Color::LightGreen => termion::color::LightGreen.write_bg(f),
-            Color::LightBlue => termion::color::LightBlue.write_bg(f),
-            Color::LightYellow => termion::color::LightYellow.write_bg(f),
-            Color::LightMagenta => termion::color::LightMagenta.write_bg(f),
-            Color::LightCyan => termion::color::LightCyan.write_bg(f),
-            Color::White => termion::color::LightWhite.write_bg(f),
-            Color::Indexed(i) => termion::color::AnsiValue(i).write_bg(f),
-            Color::Rgb(r, g, b) => termion::color::Rgb(r, g, b).write_bg(f),
+            Color::Reset => write!(f, "{}", bg(ZuiColor::Reset)),
+            Color::Black => write!(f, "{}", bg(ZuiColor::Black)),
+            Color::Red => write!(f, "{}", bg(ZuiColor::Red)),
+            Color::Green => write!(f, "{}", bg(ZuiColor::Green)),
+            Color::Yellow => write!(f, "{}", bg(ZuiColor::Yellow)),
+            Color::Blue => write!(f, "{}", bg(ZuiColor::Blue)),
+            Color::Magenta => write!(f, "{}", bg(ZuiColor::Purple)),
+            Color::Cyan => write!(f, "{}", bg(ZuiColor::Cyan)),
+            Color::Gray => write!(f, "{}", bg(ZuiColor::Black)),
+            Color::DarkGray => write!(f, "{}", bg(ZuiColor::Black)),
+            Color::LightRed => write!(f, "{}", bg(ZuiColor::RedLight)),
+            Color::LightGreen => write!(f, "{}", bg(ZuiColor::GreenLight)),
+            Color::LightBlue => write!(f, "{}", bg(ZuiColor::BlueLight)),
+            Color::LightYellow => write!(f, "{}", bg(ZuiColor::YellowLight)),
+            Color::LightMagenta => write!(f, "{}", bg(ZuiColor::PurpleLight)),
+            Color::LightCyan => write!(f, "{}", bg(ZuiColor::CyanLight)),
+            Color::White => write!(f, "{}", bg(ZuiColor::White)),
+            Color::Indexed(i) => write!(f, "{}", bg(ZuiColor::Reset)), //TODO: Fix
+            Color::Rgb(r, g, b) => write!(f, "{}", bg(ZuiColor::RGB(r.into(), g.into(), b.into()))),
         }
     }
 }
@@ -135,61 +182,56 @@ impl fmt::Display for ModifierDiff {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let remove = self.from - self.to;
         if remove.contains(Modifier::REVERSED) {
-            write!(f, "{}", termion::style::NoInvert)?;
+            write!(f, "{}", set(Style::NoReverse))?;
         }
         if remove.contains(Modifier::BOLD) {
-            // XXX: the termion NoBold flag actually enables double-underline on ECMA-48 compliant
-            // terminals, and NoFaint additionally disables bold... so we use this trick to get
-            // the right semantics.
-            write!(f, "{}", termion::style::NoFaint)?;
+            write!(f, "{}", set(Style::NoDim))?;
 
             if self.to.contains(Modifier::DIM) {
-                write!(f, "{}", termion::style::Faint)?;
+                write!(f, "{}", set(Style::Dim))?;
             }
         }
         if remove.contains(Modifier::ITALIC) {
-            write!(f, "{}", termion::style::NoItalic)?;
+            write!(f, "{}", set(Style::NoItalic))?;
         }
         if remove.contains(Modifier::UNDERLINED) {
-            write!(f, "{}", termion::style::NoUnderline)?;
+            write!(f, "{}", set(Style::NoUnderline))?;
         }
         if remove.contains(Modifier::DIM) {
-            write!(f, "{}", termion::style::NoFaint)?;
+            write!(f, "{}", set(Style::NoDim))?;
 
-            // XXX: the NoFaint flag additionally disables bold as well, so we need to re-enable it
-            // here if we want it.
             if self.to.contains(Modifier::BOLD) {
-                write!(f, "{}", termion::style::Bold)?;
+                write!(f, "{}", set(Style::Bold))?;
             }
         }
         if remove.contains(Modifier::CROSSED_OUT) {
-            write!(f, "{}", termion::style::NoCrossedOut)?;
+            write!(f, "{}", set(Style::NoStrike))?;
         }
         if remove.contains(Modifier::SLOW_BLINK) || remove.contains(Modifier::RAPID_BLINK) {
-            write!(f, "{}", termion::style::NoBlink)?;
+            write!(f, "{}", set(Style::NoBlinking))?;
         }
 
         let add = self.to - self.from;
         if add.contains(Modifier::REVERSED) {
-            write!(f, "{}", termion::style::Invert)?;
+            write!(f, "{}", set(Style::Reverse))?;
         }
         if add.contains(Modifier::BOLD) {
-            write!(f, "{}", termion::style::Bold)?;
+            write!(f, "{}", set(Style::Bold))?;
         }
         if add.contains(Modifier::ITALIC) {
-            write!(f, "{}", termion::style::Italic)?;
+            write!(f, "{}", set(Style::Italic))?;
         }
         if add.contains(Modifier::UNDERLINED) {
-            write!(f, "{}", termion::style::Underline)?;
+            write!(f, "{}", set(Style::Underline))?;
         }
         if add.contains(Modifier::DIM) {
-            write!(f, "{}", termion::style::Faint)?;
+            write!(f, "{}", set(Style::Dim))?;
         }
         if add.contains(Modifier::CROSSED_OUT) {
-            write!(f, "{}", termion::style::CrossedOut)?;
+            write!(f, "{}", set(Style::Strike))?;
         }
         if add.contains(Modifier::SLOW_BLINK) || add.contains(Modifier::RAPID_BLINK) {
-            write!(f, "{}", termion::style::Blink)?;
+            write!(f, "{}", set(Style::Blinking))?;
         }
 
         Ok(())

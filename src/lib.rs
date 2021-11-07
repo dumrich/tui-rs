@@ -1,15 +1,15 @@
-//! [tui](https://github.com/fdehau/tui-rs) is a library used to build rich
+//! [zui_widgets](https://github.com/fdehau/zui_widgets-rs) is a library used to build rich
 //! terminal users interfaces and dashboards.
 //!
-//! ![](https://raw.githubusercontent.com/fdehau/tui-rs/master/assets/demo.gif)
+//! ![](https://raw.githubusercontent.com/fdehau/zui_widgets-rs/master/assets/demo.gif)
 //!
 //! # Get started
 //!
-//! ## Adding `tui` as a dependency
+//! ## Adding `zui_widgets` as a dependency
 //!
 //! ```toml
 //! [dependencies]
-//! tui = "0.16"
+//! zui_widgets = "0.16"
 //! crossterm = "0.22"
 //! ```
 //!
@@ -20,20 +20,20 @@
 //! ```toml
 //! [dependencies]
 //! termion = "1.5"
-//! tui = { version = "0.16", default-features = false, features = ['termion'] }
+//! zui_widgets = { version = "0.16", default-features = false, features = ['termion'] }
 //! ```
 //!
 //! The same logic applies for all other available backends.
 //!
 //! ## Creating a `Terminal`
 //!
-//! Every application using `tui` should start by instantiating a `Terminal`. It is a light
+//! Every application using `zui_widgets` should start by instantiating a `Terminal`. It is a light
 //! abstraction over available backends that provides basic functionalities such as clearing the
 //! screen, hiding the cursor, etc.
 //!
 //! ```rust,no_run
 //! use std::io;
-//! use tui::{backend::CrosstermBackend, Terminal};
+//! use zui_widgets::{backend::CrosstermBackend, Terminal};
 //!
 //! fn main() -> Result<(), io::Error> {
 //!     let stdout = io::stdout();
@@ -48,7 +48,7 @@
 //!
 //! ```rust,ignore
 //! use std::io;
-//! use tui::{backend::TermionBackend, Terminal};
+//! use zui_widgets::{backend::TermionBackend, Terminal};
 //! use termion::raw::IntoRawMode;
 //!
 //! fn main() -> Result<(), io::Error> {
@@ -76,7 +76,7 @@
 //!
 //! ```rust,no_run
 //! use std::{io, thread, time::Duration};
-//! use tui::{
+//! use zui_widgets::{
 //!     backend::CrosstermBackend,
 //!     widgets::{Widget, Block, Borders},
 //!     layout::{Layout, Constraint, Direction},
@@ -126,7 +126,7 @@
 //! full customization. And `Layout` is no exception:
 //!
 //! ```rust,no_run
-//! use tui::{
+//! use zui_widgets::{
 //!     backend::Backend,
 //!     layout::{Constraint, Direction, Layout},
 //!     widgets::{Block, Borders},

@@ -1,7 +1,7 @@
 //! Primitives for styled text.
 //!
 //! A terminal UI is at its root a lot of strings. In order to make it accessible and stylish,
-//! those strings may be associated to a set of styles. `tui` has three ways to represent them:
+//! those strings may be associated to a set of styles. `zui_widgets` has three ways to represent them:
 //! - A single line string where all graphemes have the same style is represented by a [`Span`].
 //! - A single line string where each grapheme may have its own style is represented by [`Spans`].
 //! - A multiple line string where each grapheme may have its own style is represented by a
@@ -11,7 +11,7 @@
 //! is a [`Spans`].
 //!
 //! Keep it mind that a lot of widgets will use those types to advertise what kind of string is
-//! supported for their properties. Moreover, `tui` provides convenient `From` implementations so
+//! supported for their properties. Moreover, `zui_widgets` provides convenient `From` implementations so
 //! that you can start by using simple `String` or `&str` and then promote them to the previous
 //! primitives when you need additional styling capabilities.
 //!
@@ -19,9 +19,9 @@
 //! its `title` property (which is a [`Spans`] under the hood):
 //!
 //! ```rust
-//! # use tui::widgets::Block;
-//! # use tui::text::{Span, Spans};
-//! # use tui::style::{Color, Style};
+//! # use zui_widgets::widgets::Block;
+//! # use zui_widgets::text::{Span, Spans};
+//! # use zui_widgets::style::{Color, Style};
 //! // A simple string with no styling.
 //! // Converted to Spans(vec![
 //! //   Span { content: Cow::Borrowed("My title"), style: Style { .. } }
@@ -71,7 +71,7 @@ impl<'a> Span<'a> {
     /// ## Examples
     ///
     /// ```rust
-    /// # use tui::text::Span;
+    /// # use zui_widgets::text::Span;
     /// Span::raw("My text");
     /// Span::raw(String::from("My text"));
     /// ```
@@ -90,8 +90,8 @@ impl<'a> Span<'a> {
     /// # Examples
     ///
     /// ```rust
-    /// # use tui::text::Span;
-    /// # use tui::style::{Color, Modifier, Style};
+    /// # use zui_widgets::text::Span;
+    /// # use zui_widgets::style::{Color, Modifier, Style};
     /// let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::ITALIC);
     /// Span::styled("My text", style);
     /// Span::styled(String::from("My text"), style);
@@ -119,8 +119,8 @@ impl<'a> Span<'a> {
     /// ## Examples
     ///
     /// ```rust
-    /// # use tui::text::{Span, StyledGrapheme};
-    /// # use tui::style::{Color, Modifier, Style};
+    /// # use zui_widgets::text::{Span, StyledGrapheme};
+    /// # use zui_widgets::style::{Color, Modifier, Style};
     /// # use std::iter::Iterator;
     /// let style = Style::default().fg(Color::Yellow);
     /// let span = Span::styled("Text", style);
@@ -209,8 +209,8 @@ impl<'a> Spans<'a> {
     /// ## Examples
     ///
     /// ```rust
-    /// # use tui::text::{Span, Spans};
-    /// # use tui::style::{Color, Style};
+    /// # use zui_widgets::text::{Span, Spans};
+    /// # use zui_widgets::style::{Color, Style};
     /// let spans = Spans::from(vec![
     ///     Span::styled("My", Style::default().fg(Color::Yellow)),
     ///     Span::raw(" text"),
@@ -263,8 +263,8 @@ impl<'a> From<Spans<'a>> for String {
 /// [`core::iter::Extend`] which enables the concatenation of several [`Text`] blocks.
 ///
 /// ```rust
-/// # use tui::text::Text;
-/// # use tui::style::{Color, Modifier, Style};
+/// # use zui_widgets::text::Text;
+/// # use zui_widgets::style::{Color, Modifier, Style};
 /// let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::ITALIC);
 ///
 /// // An initial two lines of `Text` built from a `&str`
@@ -296,7 +296,7 @@ impl<'a> Text<'a> {
     /// ## Examples
     ///
     /// ```rust
-    /// # use tui::text::Text;
+    /// # use zui_widgets::text::Text;
     /// Text::raw("The first line\nThe second line");
     /// Text::raw(String::from("The first line\nThe second line"));
     /// ```
@@ -317,8 +317,8 @@ impl<'a> Text<'a> {
     /// # Examples
     ///
     /// ```rust
-    /// # use tui::text::Text;
-    /// # use tui::style::{Color, Modifier, Style};
+    /// # use zui_widgets::text::Text;
+    /// # use zui_widgets::style::{Color, Modifier, Style};
     /// let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::ITALIC);
     /// Text::styled("The first line\nThe second line", style);
     /// Text::styled(String::from("The first line\nThe second line"), style);
@@ -337,7 +337,7 @@ impl<'a> Text<'a> {
     /// ## Examples
     ///
     /// ```rust
-    /// use tui::text::Text;
+    /// use zui_widgets::text::Text;
     /// let text = Text::from("The first line\nThe second line");
     /// assert_eq!(15, text.width());
     /// ```
@@ -354,7 +354,7 @@ impl<'a> Text<'a> {
     /// ## Examples
     ///
     /// ```rust
-    /// use tui::text::Text;
+    /// use zui_widgets::text::Text;
     /// let text = Text::from("The first line\nThe second line");
     /// assert_eq!(2, text.height());
     /// ```
@@ -367,8 +367,8 @@ impl<'a> Text<'a> {
     /// # Examples
     ///
     /// ```rust
-    /// # use tui::text::Text;
-    /// # use tui::style::{Color, Modifier, Style};
+    /// # use zui_widgets::text::Text;
+    /// # use zui_widgets::style::{Color, Modifier, Style};
     /// let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::ITALIC);
     /// let mut raw_text = Text::raw("The first line\nThe second line");
     /// let styled_text = Text::styled(String::from("The first line\nThe second line"), style);

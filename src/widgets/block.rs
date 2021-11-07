@@ -32,8 +32,8 @@ impl BorderType {
 /// # Examples
 ///
 /// ```
-/// # use tui::widgets::{Block, BorderType, Borders};
-/// # use tui::style::{Style, Color};
+/// # use zui_widgets::widgets::{Block, BorderType, Borders};
+/// # use zui_widgets::style::{Style, Color};
 /// Block::default()
 ///     .title("Block")
 ///     .borders(Borders::LEFT | Borders::RIGHT)

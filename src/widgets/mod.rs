@@ -86,9 +86,9 @@ pub trait Widget {
 ///
 /// ```rust,no_run
 /// # use std::io;
-/// # use tui::Terminal;
-/// # use tui::backend::{Backend, TestBackend};
-/// # use tui::widgets::{Widget, List, ListItem, ListState};
+/// # use zui_widgets::Terminal;
+/// # use zui_widgets::backend::{Backend, TestBackend};
+/// # use zui_widgets::widgets::{Widget, List, ListItem, ListState};
 ///
 /// // Let's say we have some events to display.
 /// struct Events {
@@ -165,7 +165,7 @@ pub trait Widget {
 /// loop {
 ///     terminal.draw(|f| {
 ///         // The items managed by the application are transformed to something
-///         // that is understood by tui.
+///         // that is understood by zui_widgets.
 ///         let items: Vec<ListItem>= events.items.iter().map(|i| ListItem::new(i.as_ref())).collect();
 ///         // The `List` widget is then built with those items.
 ///         let list = List::new(items);

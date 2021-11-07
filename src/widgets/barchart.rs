@@ -13,8 +13,8 @@ use unicode_width::UnicodeWidthStr;
 /// # Examples
 ///
 /// ```
-/// # use tui::widgets::{Block, Borders, BarChart};
-/// # use tui::style::{Style, Color, Modifier};
+/// # use zui_widgets::widgets::{Block, Borders, BarChart};
+/// # use zui_widgets::style::{Style, Color, Modifier};
 /// BarChart::default()
 ///     .block(Block::default().title("BarChart").borders(Borders::ALL))
 ///     .bar_width(3)

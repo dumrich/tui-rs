@@ -83,10 +83,10 @@ where
     /// # Examples
     ///
     /// ```rust
-    /// # use tui::Terminal;
-    /// # use tui::backend::TestBackend;
-    /// # use tui::layout::Rect;
-    /// # use tui::widgets::Block;
+    /// # use zui_widgets::Terminal;
+    /// # use zui_widgets::backend::TestBackend;
+    /// # use zui_widgets::layout::Rect;
+    /// # use zui_widgets::widgets::Block;
     /// # let backend = TestBackend::new(5, 5);
     /// # let mut terminal = Terminal::new(backend).unwrap();
     /// let block = Block::default();
@@ -109,10 +109,10 @@ where
     /// # Examples
     ///
     /// ```rust
-    /// # use tui::Terminal;
-    /// # use tui::backend::TestBackend;
-    /// # use tui::layout::Rect;
-    /// # use tui::widgets::{List, ListItem, ListState};
+    /// # use zui_widgets::Terminal;
+    /// # use zui_widgets::backend::TestBackend;
+    /// # use zui_widgets::layout::Rect;
+    /// # use zui_widgets::widgets::{List, ListItem, ListState};
     /// # let backend = TestBackend::new(5, 5);
     /// # let mut terminal = Terminal::new(backend).unwrap();
     /// let mut state = ListState::default();
