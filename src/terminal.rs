@@ -1,5 +1,5 @@
 use crate::{
-    backend::Backend,
+    backend::Backend::{self, zui},
     buffer::Buffer,
     layout::Rect,
     widgets::{StatefulWidget, Widget},
@@ -53,6 +53,94 @@ where
     hidden_cursor: bool,
     /// Viewport
     viewport: Viewport,
+}
+
+use zui_core::{
+    key::KeyIterator,
+    term::{clear::TClear, cursor::TCursor},
+};
+
+impl Terminal<zui::ZuiBackend> {
+    pub fn size_did_change(&mut self) -> bool {
+        self.backend_mut().zui.size_did_change()
+    }
+
+    pub fn enter_raw_mode(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.enter_raw_mode()
+    }
+
+    // TODO: Move this shit to a trait
+    pub fn keys(&self, stdin: io::Stdin) -> KeyIterator {
+        self.backend_mut().zui.keys()
+    }
+
+    pub fn switch_screen(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.switch_screen()
+    }
+
+    pub fn switch_main(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.switch_main()
+    }
+
+    pub fn set_cursor_to(&mut self, x_pos: u16, y_pos: u16) -> io::Result<()> {
+        self.backend_mut().zui.set_cursor_to()
+    }
+
+    pub fn get_cursor(&self) -> io::Result<(u16, u16)> {
+        self.backend_mut().zui.get_cursor()
+    }
+
+    pub fn show_cursor(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.get_cursor()
+    }
+
+    pub fn hide_cursor(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.hide_cursor()
+    }
+
+    pub fn blinking_block(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.blinking_block()
+    }
+
+    pub fn steady_block(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.steady_block()
+    }
+
+    pub fn blinking_underline(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.blinking_underline()
+    }
+
+    pub fn steady_underline(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.steady_underline()
+    }
+
+    pub fn blinking_bar(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.blinking_bar()
+    }
+
+    pub fn steady_bar(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.steady_bar()
+    }
+
+    pub fn reset_cursor(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.reset_cursor()
+    }
+
+    pub fn clear_screen(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.clear_screen()
+    }
+
+    pub fn clear_below_cursor(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.clear_below_cursor()
+    }
+
+    pub fn clear_above_cursor(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.clear_above_cursor()
+    }
+
+    pub fn clear_line(&mut self) -> io::Result<()> {
+        self.backend_mut().zui.clear_line()
+    }
 }
 
 /// Represents a consistent terminal interface for rendering.
