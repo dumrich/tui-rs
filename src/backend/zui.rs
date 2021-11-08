@@ -4,15 +4,15 @@ use crate::{
     layout::Rect,
     style::{Color, Modifier},
 };
-use libzui::style::{self, set, Style};
-use libzui::term;
-use libzui::term::clear::TClear;
-use libzui::term::cursor::TCursor;
 use std::fmt;
 use std::io::{self, Write};
+use zui_core::style::{self, set, Style};
+use zui_core::term;
+use zui_core::term::clear::TClear;
+use zui_core::term::cursor::TCursor;
 
 pub struct ZuiBackend<'b> {
-    zui: term::Terminal<'b, io::Stdout>,
+    pub zui: term::Terminal<'b, io::Stdout>,
 }
 
 impl<'b> ZuiBackend<'b> {
@@ -107,7 +107,7 @@ impl<'b> Backend for ZuiBackend<'b> {
             string,
             Fg(Color::Reset),
             Bg(Color::Reset),
-            libzui::style::set(libzui::style::Style::Reset),
+            set(Style::Reset),
         )
     }
 }
@@ -123,8 +123,8 @@ struct ModifierDiff {
 
 impl fmt::Display for Fg {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use libzui::color::fg;
-        use libzui::color::Color as ZuiColor;
+        use zui_core::color::fg;
+        use zui_core::color::Color as ZuiColor;
 
         match self.0 {
             Color::Reset => write!(f, "{}", fg(ZuiColor::Reset)),
@@ -151,8 +151,8 @@ impl fmt::Display for Fg {
 }
 impl std::fmt::Display for Bg {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use libzui::color::bg;
-        use libzui::color::Color as ZuiColor;
+        use zui_core::color::bg;
+        use zui_core::color::Color as ZuiColor;
 
         match self.0 {
             Color::Reset => write!(f, "{}", bg(ZuiColor::Reset)),
