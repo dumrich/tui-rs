@@ -8,8 +8,6 @@ use std::fmt;
 use std::io::{self, Write};
 use zui_core::style::{self, set, Style};
 use zui_core::term;
-use zui_core::term::clear::TClear;
-use zui_core::term::cursor::TCursor;
 
 pub struct ZuiBackend<'b> {
     pub zui: term::Terminal<'b, io::Stdout>,

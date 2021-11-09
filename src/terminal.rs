@@ -1,5 +1,5 @@
 use crate::{
-    backend::Backend::{self, zui},
+    backend::{zui, Backend},
     buffer::Buffer,
     layout::Rect,
     widgets::{StatefulWidget, Widget},
@@ -55,12 +55,9 @@ where
     viewport: Viewport,
 }
 
-use zui_core::{
-    key::KeyIterator,
-    term::{clear::TClear, cursor::TCursor},
-};
+use zui_core::key::KeyIterator;
 
-impl Terminal<zui::ZuiBackend> {
+impl Terminal<zui::ZuiBackend<'_>> {
     pub fn size_did_change(&mut self) -> bool {
         self.backend_mut().zui.size_did_change()
     }
@@ -71,7 +68,7 @@ impl Terminal<zui::ZuiBackend> {
 
     // TODO: Move this shit to a trait
     pub fn keys(&self, stdin: io::Stdin) -> KeyIterator {
-        self.backend_mut().zui.keys()
+        self.backend().zui.keys(stdin)
     }
 
     pub fn switch_screen(&mut self) -> io::Result<()> {
@@ -83,19 +80,7 @@ impl Terminal<zui::ZuiBackend> {
     }
 
     pub fn set_cursor_to(&mut self, x_pos: u16, y_pos: u16) -> io::Result<()> {
-        self.backend_mut().zui.set_cursor_to()
-    }
-
-    pub fn get_cursor(&self) -> io::Result<(u16, u16)> {
-        self.backend_mut().zui.get_cursor()
-    }
-
-    pub fn show_cursor(&mut self) -> io::Result<()> {
-        self.backend_mut().zui.get_cursor()
-    }
-
-    pub fn hide_cursor(&mut self) -> io::Result<()> {
-        self.backend_mut().zui.hide_cursor()
+        self.backend_mut().zui.set_cursor_to(x_pos, y_pos)
     }
 
     pub fn blinking_block(&mut self) -> io::Result<()> {
