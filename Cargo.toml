@@ -1,6 +1,6 @@
 [package]
 name = "zui-widgets"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Abhinav Chavali <abhinavchavali12@gmail.com>", "Florian Dehau <work@fdehau.com>"]
 description = """
     An addition to `zui` to add widgets to your UI
