@@ -58,6 +58,18 @@ where
 use zui_core::key::KeyIterator;
 
 impl Terminal<zui::ZuiBackend<'_>> {
+    pub fn print(&mut self, c: &str) -> io::Result<()> {
+        self.backend_mut().zui.print(c)
+    }
+
+    pub fn get_size(&self) -> (u16, u16) {
+        self.backend().zui.get_size()
+    }
+
+    pub fn get_position(&self) -> (u16, u16) {
+        self.backend().zui.get_position()
+    }
+
     pub fn size_did_change(&mut self) -> bool {
         self.backend_mut().zui.size_did_change()
     }
